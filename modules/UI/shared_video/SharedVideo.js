@@ -126,19 +126,23 @@ export default class SharedVideoManager {
     }
 
     // This code loads a video element and creates player wrapper methods
-    initVideoAPI(attributes)
+    initVideoAPI(attributes, url)
     {
+      const self = this;
       this.initialAttributes = attributes;
       var v = document.createElement ("video");
       v.setAttribute("id", "sharedVideoPlayer");
-      v.controls = APP.conference.isLocalId(self.from) ? 1 : 0;
+      v.controls = APP.conference.isLocalId(this.from) ? 1 : 0;
       v.setAttribute("style","height:100%;width:100%");
+      v.src = url;
 
       // API wrappers
       const playerState = {
           PLAYING: 'playing',
           PAUSED: 'paused'
       }
+
+      v.playerStates = playerState;
 
       v.playVideo = function() {
         this.play();
@@ -177,24 +181,106 @@ export default class SharedVideoManager {
         return this.currentTime;
       }
 
+      v.seekTo = function(time) {
+        v.currentTime = time;
+      }
+
       v.destroy = function() {
+        self.isPlayerAPILoaded = false;
         document.getElementById("sharedVideoPlayer").remove();
       }
+
+      this.video = v;
     }
 
     initVideoEvents() {
+      const self = this;
 
-      window.onPlayerStateChange = function(event) {};
+      window.onPlayerStateChange = function(event) {
+        self.player = event.target;
+        let playing = event.type == self.player.playerStates.PLAYING;
+        let paused = event.type == self.player.playerStates.PAUSED;
 
+        if (playing) {
+          if (self.initialAttributes) {
+            self.processVideoUpdate(
+              self.player,
+              self.initialAttributes);
 
+            self.initialAttributes = null;
+          }
+        } else if (paused) {
+          sendAnalytics(createEvent('paused'));
+        }
 
-      window.onVideoProgress = function(event) {};
+        self.fireSharedVideoEvent(paused)
+      };
 
-      window.onVolumeChange = function(event) {};
+      window.onVideoProgress = function(event) {
+        const state = event.target.getPlayerState();
 
-      window.onPlayerReady = function(event) {};
+        if (state == event.target.playerState.PAUSED) {
+          self.fireSharedVideoEvent(true);
+        }
+      };
 
-      window.onPlayerError = function(event) {};
+      window.onVolumeChange = function(event) {
+        self.fireSharedVideoEvent();
+      };
+
+      window.onPlayerReady = function(event) {
+        console.log(event.data);
+
+        if (self.isPlayerAPILoaded) return;
+
+        const player = event.target;
+
+        var container = document.getElementById("sharedVideoIFrame");
+        container.appendChild(player);
+
+        let iframe = player;
+        player.playVideo();
+
+        var url = self.url;
+
+        self.sharedVideo = new SharedVideoContainer(
+          { url, iframe, player});
+
+        VideoLayout.addLargeVideoContainer(
+          SHARED_VIDEO_CONTAINER_TYPE, self.sharedVideo);
+
+        APP.store.dispatch(participantJoined({
+          conference: APP.conference._room,
+          id: self.url,
+          isFakeParticipant: true,
+          name: "Movis"
+        }));
+
+        APP.store.dispatch(pinParticipant(self.url));
+
+        // If we are sending the command and we are starting the player
+        // we need to continuously send the player current time position
+        if (APP.conference.isLocalId(self.from)) {
+            self.intervalId = setInterval(
+                self.fireSharedVideoEvent.bind(self),
+                updateInterval);
+        }
+
+        self.isPlayerAPILoaded = true;
+      };
+
+      window.onPlayerError = function(event) {
+        logger.error('Error in the file player:', event);
+
+        self.errorInPlayer = event.target;
+      };
+
+      this.video.addEventListener('canplay', window.onPlayerReady);
+      this.video.addEventListener('onprogress', window.onVideoProgress);
+      this.video.addEventListener('volumechange',window.onVolumeChange);
+      this.video.addEventListener('playing', window.onPlayerStateChange);
+      this.video.addEventListener('pause', window.onPlayerStateChange);
+      this.video.addEventListener('error', window.onPlayerError);
     }
 
     // This code loads the IFrame Player API code asynchronously.
@@ -215,7 +301,7 @@ export default class SharedVideoManager {
 
       const self = this;
 
-      if (self.isPlayerAPILoaded) {
+      if (self.isPlayerAPILoaded || typeof window.onYouTubeIframeAPIReady === "function") {
           window.onYouTubeIframeAPIReady();
       } else {
           window.onYouTubeIframeAPIReady = function() {
@@ -276,10 +362,10 @@ export default class SharedVideoManager {
 
                   self.initialAttributes = null;
               }
-              self.smartAudioMute();
+              //self.smartAudioMute();
               // eslint-disable-next-line eqeqeq
           } else if (event.data == YT.PlayerState.PAUSED) {
-              self.smartAudioUnmute();
+              //self.smartAudioUnmute();
               sendAnalytics(createEvent('paused'));
           }
           // eslint-disable-next-line eqeqeq
@@ -307,17 +393,17 @@ export default class SharedVideoManager {
           self.fireSharedVideoEvent();
 
           // let's check, if player is not muted lets mute locally
-          if (event.data.volume > 0 && !event.data.muted) {
-              self.smartAudioMute();
-          } else if (event.data.volume <= 0 || event.data.muted) {
-              self.smartAudioUnmute();
-          }
-          sendAnalytics(createEvent(
-              'volume.changed',
-              {
-                  volume: event.data.volume,
-                  muted: event.data.muted
-              }));
+          // if (event.data.volume > 0 && !event.data.muted) {
+          //     self.smartAudioMute();
+          // } else if (event.data.volume <= 0 || event.data.muted) {
+          //     self.smartAudioUnmute();
+          // }
+          // sendAnalytics(createEvent(
+          //     'volume.changed',
+          //     {
+          //         volume: event.data.volume,
+          //         muted: event.data.muted
+          //     }));
       };
 
       window.onPlayerReady = function(event) {
@@ -407,13 +493,13 @@ export default class SharedVideoManager {
 
         if (!this.yVideoId)
         {
-          this.initVideoAPI(attributes);
-          this.initVideoEvents()
+          this.initVideoAPI(attributes, url);
+          this.initVideoEvents();
         }
         else {
           //this.url = yVideoId;
-          this.initYouTubeAPI(attributes);
           this.initYouTubeEvents(this.url);
+          this.initYouTubeAPI(attributes);
         }
     }
 
@@ -427,11 +513,13 @@ export default class SharedVideoManager {
             return;
         }
 
+        const playerState = typeof YT !== 'undefined' ? YT.PlayerState : player.playerStates;
+
         // eslint-disable-next-line eqeqeq
         if (attributes.state == 'playing') {
 
             const isPlayerPaused
-                = this.player.getPlayerState() === YT.PlayerState.PAUSED;
+                = this.player.getPlayerState() === playerState.PAUSED;
 
             // If our player is currently paused force the seek.
             this.processTime(player, attributes, isPlayerPaused);
@@ -496,6 +584,7 @@ export default class SharedVideoManager {
      * Checks current state of the player and fire an event with the values.
      */
     fireSharedVideoEvent(sendPauseEvent) {
+        const playerState = typeof YT !== 'undefined'? YT.PlayerState : this.player.playerStates;
         // ignore update checks if we are not the owner of the video
         // or there is still no player defined or we are stopped
         // (in a process of stopping)
@@ -508,10 +597,10 @@ export default class SharedVideoManager {
 
         // if its paused and haven't been pause - send paused
 
-        if (state === YT.PlayerState.PAUSED && sendPauseEvent) {
+        if (state === playerState.PAUSED && sendPauseEvent) {
             this.emitter.emit(UIEvents.UPDATE_SHARED_VIDEO,
                 this.url, 'pause', this.player.getCurrentTime());
-        } else if (state === YT.PlayerState.PLAYING) {
+        } else if (state === playerState.PLAYING) {
             // if its playing and it was paused - send update with time
             // if its playing and was playing just send update with time
             this.emitter.emit(UIEvents.UPDATE_SHARED_VIDEO,
@@ -606,6 +695,7 @@ export default class SharedVideoManager {
         this.url = null;
         this.isSharedVideoShown = false;
         this.initialAttributes = null;
+        this.isPlayerAPILoaded = false;
     }
 
     /**
