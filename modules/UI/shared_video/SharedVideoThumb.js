@@ -50,7 +50,13 @@ export default class SharedVideoThumb extends SmallVideo {
         const avatar = document.createElement('img');
 
         avatar.className = 'sharedVideoAvatar';
-        avatar.src = `https://img.youtube.com/vi/${this.url}/0.jpg`;
+
+        let yVideoId = getYoutubeLink(this.url);
+        if (!yVideoId)
+        {}
+        else{
+          avatar.src = `https://img.youtube.com/vi/${yVideoId}/0.jpg`;
+        }
         container.appendChild(avatar);
 
         const displayNameContainer = document.createElement('div');
@@ -86,4 +92,16 @@ export default class SharedVideoThumb extends SmallVideo {
             participantID: this.id
         });
     }
+}
+
+/**
+ * Checks if given string is youtube url.
+ * @param {string} url string to check.
+ * @returns {boolean}
+ */
+function getYoutubeLink(url) {
+    const p = /^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;// eslint-disable-line max-len
+
+
+    return url.match(p) ? RegExp.$1 : false;
 }

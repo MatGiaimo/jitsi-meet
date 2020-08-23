@@ -153,7 +153,7 @@ export default class SharedVideoManager {
               const p = new YT.Player('sharedVideoIFrame', {
                   height: '100%',
                   width: '100%',
-                  videoId: self.url,
+                  videoId: self.yVideoId,
                   playerVars: {
                       'origin': location.origin,
                       'fs': '0',
@@ -331,14 +331,14 @@ export default class SharedVideoManager {
         this.emitter.on(UIEvents.AUDIO_MUTED, this.localAudioMutedListener);
 
         // need to check and run youtube or create video tag
-        const yVideoId = getYoutubeLink(url);
+        this.yVideoId = getYoutubeLink(url);
 
-        if (!yVideoId)
+        if (!this.yVideoId)
         {
 
         }
         else {
-          this.url = yVideoId;
+          //this.url = yVideoId;
           this.initYouTubeAPI(attributes);
           this.initYouTubeEvents(this.url);
         }
