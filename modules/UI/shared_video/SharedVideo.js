@@ -125,6 +125,78 @@ export default class SharedVideoManager {
         }
     }
 
+    // This code loads a video element and creates player wrapper methods
+    initVideoAPI(attributes)
+    {
+      this.initialAttributes = attributes;
+      var v = document.createElement ("video");
+      v.setAttribute("id", "sharedVideoPlayer");
+      v.controls = APP.conference.isLocalId(self.from) ? 1 : 0;
+      v.setAttribute("style","height:100%;width:100%");
+
+      // API wrappers
+      const playerState = {
+          PLAYING: 'playing',
+          PAUSED: 'paused'
+      }
+
+      v.playVideo = function() {
+        this.play();
+      }
+
+      v.pauseVideo = function() {
+        this.pause();
+      }
+
+      v.isMuted = function() {
+        return this.muted;
+      }
+
+      v.mute = function() {
+        this.muted = true;
+      }
+
+      v.unMute = function() {
+        this.muted = false;
+      }
+
+      v.getPlayerState = function() {
+        if (this.paused) return playerState.PAUSED;
+        return playerState.PLAYING;
+      }
+
+      v.getVolume = function() {
+        return this.volume;
+      }
+
+      v.setVolume = function(volume) {
+        this.volume = volume;
+      }
+
+      v.getCurrentTime = function() {
+        return this.currentTime;
+      }
+
+      v.destroy = function() {
+        document.getElementById("sharedVideoPlayer").remove();
+      }
+    }
+
+    initVideoEvents() {
+
+      window.onPlayerStateChange = function(event) {};
+
+
+
+      window.onVideoProgress = function(event) {};
+
+      window.onVolumeChange = function(event) {};
+
+      window.onPlayerReady = function(event) {};
+
+      window.onPlayerError = function(event) {};
+    }
+
     // This code loads the IFrame Player API code asynchronously.
     initYouTubeAPI(attributes) {
       const tag = document.createElement('script');
@@ -335,7 +407,8 @@ export default class SharedVideoManager {
 
         if (!this.yVideoId)
         {
-
+          this.initVideoAPI(attributes);
+          this.initVideoEvents()
         }
         else {
           //this.url = yVideoId;
