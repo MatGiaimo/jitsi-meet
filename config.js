@@ -170,10 +170,10 @@ var config = {
     // Desktop sharing
 
     // Optional desktop sharing frame rate options. Default value: min:5, max:5.
-    // desktopSharingFrameRate: {
-    //     min: 5,
-    //     max: 5
-    // },
+    desktopSharingFrameRate: {
+        min: 30,
+        max: 60
+    },
 
     // Try to start calls with screen-sharing instead of camera video.
     // startScreenSharing: false,

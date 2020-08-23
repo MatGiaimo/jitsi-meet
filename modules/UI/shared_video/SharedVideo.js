@@ -139,7 +139,7 @@ export default class SharedVideoManager {
       // API wrappers
       const playerState = {
           PLAYING: 'playing',
-          PAUSED: 'paused'
+          PAUSED: 'pause'
       }
 
       v.playerStates = playerState;
@@ -278,6 +278,7 @@ export default class SharedVideoManager {
       this.video.addEventListener('canplay', window.onPlayerReady);
       this.video.addEventListener('onprogress', window.onVideoProgress);
       this.video.addEventListener('volumechange',window.onVolumeChange);
+      this.video.addEventListener('play', window.onPlayerStateChange);
       this.video.addEventListener('playing', window.onPlayerStateChange);
       this.video.addEventListener('pause', window.onPlayerStateChange);
       this.video.addEventListener('error', window.onPlayerError);
@@ -705,13 +706,15 @@ export default class SharedVideoManager {
      * i.e. pressing the mute button or it was programatically triggerred
      */
     onLocalAudioMuted(muted, userInteraction) {
+        const playerState = typeof YT !== 'undefined' ? YT.PlayerState : player.playerStates;
+
         if (!this.player) {
             return;
         }
 
         if (muted) {
             this.mutedWithUserInteraction = userInteraction;
-        } else if (this.player.getPlayerState() !== YT.PlayerState.PAUSED) {
+        } else if (this.player.getPlayerState() !== playerState.PAUSED) {
             this.smartPlayerMute(true, false);
 
             // Check if we need to update other participants
@@ -730,12 +733,12 @@ export default class SharedVideoManager {
             this.player.mute();
 
             if (isVideoUpdate) {
-                this.smartAudioUnmute();
+                //this.smartAudioUnmute();
             }
         } else if (this.player.isMuted() && !mute) {
             this.player.unMute();
             if (isVideoUpdate) {
-                this.smartAudioMute();
+                //this.smartAudioMute();
             }
         }
     }

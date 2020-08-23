@@ -2,7 +2,7 @@
 /* eslint sort-keys: ["error", "asc", {"caseSensitive": false}] */
 
 var interfaceConfig = {
-    APP_NAME: 'Jitsi Meet',
+    APP_NAME: 'MVT',
     AUDIO_LEVEL_PRIMARY_COLOR: 'rgba(255,255,255,0.4)',
     AUDIO_LEVEL_SECONDARY_COLOR: 'rgba(255,255,255,0.2)',
 
@@ -47,7 +47,7 @@ var interfaceConfig = {
     DEFAULT_BACKGROUND: '#474747',
     DEFAULT_LOCAL_DISPLAY_NAME: 'me',
     DEFAULT_LOGO_URL: 'images/watermark.png',
-    DEFAULT_REMOTE_DISPLAY_NAME: 'Fellow Jitster',
+    DEFAULT_REMOTE_DISPLAY_NAME: 'Fellow Lunatic',
     DEFAULT_WELCOME_PAGE_LOGO_URL: 'images/watermark.png',
 
     DISABLE_DOMINANT_SPEAKER_INDICATOR: false,
@@ -166,10 +166,10 @@ var interfaceConfig = {
     SHOW_CHROME_EXTENSION_BANNER: false,
 
     SHOW_DEEP_LINKING_IMAGE: false,
-    SHOW_JITSI_WATERMARK: true,
+    SHOW_JITSI_WATERMARK: false,
     SHOW_POWERED_BY: false,
     SHOW_PROMOTIONAL_CLOSE_PAGE: false,
-    SHOW_WATERMARK_FOR_GUESTS: true, // if watermark is disabled by default, it can be shown only for guests
+    SHOW_WATERMARK_FOR_GUESTS: false, // if watermark is disabled by default, it can be shown only for guests
 
     /*
      * If indicated some of the error dialogs may point to the support URL for
