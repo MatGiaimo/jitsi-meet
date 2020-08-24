@@ -133,6 +133,7 @@ export default class SharedVideoManager {
       var v = document.createElement ("video");
       v.setAttribute("id", "sharedVideoPlayer");
       v.controls = APP.conference.isLocalId(this.from) ? 1 : 0;
+      v.muted = true;
       v.setAttribute("style","height:100%;width:100%");
       v.src = url;
 
@@ -240,6 +241,8 @@ export default class SharedVideoManager {
 
         let iframe = player;
         player.playVideo();
+        // For the browsers - start muted then unmute after play
+        player.unMute();
 
         var url = self.url;
 
