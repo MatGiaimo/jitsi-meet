@@ -140,11 +140,11 @@ export default class SharedVideoManager {
 
       // API wrappers
       const playerState = {
-          PLAYING: 'playing',
-          PAUSED: 'pause'
+          PLAYING: 1,
+          PAUSED: 2
       }
 
-      v.playerStates = playerState;
+      v.playerState = playerState;
 
       v.playVideo = function() {
         this.play();
@@ -200,8 +200,8 @@ export default class SharedVideoManager {
 
       window.onPlayerStateChange = function(event) {
         self.player = event.target;
-        let playing = event.type == self.player.playerStates.PLAYING;
-        let paused = event.type == self.player.playerStates.PAUSED;
+        let playing = event.type == 'play' || event.type == 'playing';
+        let paused = event.type == 'pause';
 
         if (playing) {
           if (self.initialAttributes) {
@@ -520,7 +520,7 @@ export default class SharedVideoManager {
             return;
         }
 
-        const playerState = typeof YT !== 'undefined' ? YT.PlayerState : player.playerStates;
+        const playerState = typeof YT !== 'undefined' ? YT.PlayerState : player.playerState;
 
         // eslint-disable-next-line eqeqeq
         if (attributes.state == 'playing') {
@@ -591,7 +591,7 @@ export default class SharedVideoManager {
      * Checks current state of the player and fire an event with the values.
      */
     fireSharedVideoEvent(sendPauseEvent) {
-        const playerState = typeof YT !== 'undefined'? YT.PlayerState : this.player.playerStates;
+        const playerState = typeof YT !== 'undefined'? YT.PlayerState : this.player.playerState;
         // ignore update checks if we are not the owner of the video
         // or there is still no player defined or we are stopped
         // (in a process of stopping)
@@ -712,7 +712,7 @@ export default class SharedVideoManager {
      * i.e. pressing the mute button or it was programatically triggerred
      */
     onLocalAudioMuted(muted, userInteraction) {
-        const playerState = typeof YT !== 'undefined' ? YT.PlayerState : player.playerStates;
+        const playerState = typeof YT !== 'undefined' ? YT.PlayerState : player.playerState;
 
         if (!this.player) {
             return;
