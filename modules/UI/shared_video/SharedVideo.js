@@ -132,7 +132,8 @@ export default class SharedVideoManager {
       this.initialAttributes = attributes;
       var v = document.createElement ("video");
       v.setAttribute("id", "sharedVideoPlayer");
-      v.controls = APP.conference.isLocalId(this.from) ? 1 : 0;
+      //v.controls = APP.conference.isLocalId(this.from) ? 1 : 0;
+      v.controls = true;
       v.muted = true;
       v.setAttribute("style","height:100%;width:100%");
       v.src = url;
@@ -310,8 +311,9 @@ export default class SharedVideoManager {
       } else {
           window.onYouTubeIframeAPIReady = function() {
               self.isPlayerAPILoaded = true;
-              const showControls
-                  = APP.conference.isLocalId(self.from) ? 1 : 0;
+              //const showControls
+              //    = APP.conference.isLocalId(self.from) ? 1 : 0;
+              const showControls = true;
               const p = new YT.Player('sharedVideoIFrame', {
                   height: '100%',
                   width: '100%',
@@ -413,10 +415,11 @@ export default class SharedVideoManager {
       window.onPlayerReady = function(event) {
           const player = event.target;
 
-          // do not relay on autoplay as it is not sending all of the events
-          // in onPlayerStateChange
+          player.mute();
 
           player.playVideo();
+
+          player.unMute();
 
           const iframe = player.getIframe();
 
@@ -429,7 +432,7 @@ export default class SharedVideoManager {
           // prevents pausing participants not sharing the video
           // to pause the video
           if (!APP.conference.isLocalId(self.from)) {
-              $('#sharedVideo').css('pointer-events', 'none');
+              //$('#sharedVideo').css('pointer-events', 'none');
           }
 
           VideoLayout.addLargeVideoContainer(
@@ -531,19 +534,19 @@ export default class SharedVideoManager {
             // Process mute.
             const isAttrMuted = attributes.muted === 'true';
 
-            if (player.isMuted() !== isAttrMuted) {
-                this.smartPlayerMute(isAttrMuted, true);
-            }
-
-            // Process volume
-            if (!isAttrMuted
-                && attributes.volume !== undefined
-                // eslint-disable-next-line eqeqeq
-                && player.getVolume() != attributes.volume) {
-
-                player.setVolume(attributes.volume);
-                logger.info(`Player change of volume:${attributes.volume}`);
-            }
+            // if (player.isMuted() !== isAttrMuted) {
+            //     this.smartPlayerMute(isAttrMuted, true);
+            // }
+            //
+            // // Process volume
+            // if (!isAttrMuted
+            //     && attributes.volume !== undefined
+            //     // eslint-disable-next-line eqeqeq
+            //     && player.getVolume() != attributes.volume) {
+            //
+            //     player.setVolume(attributes.volume);
+            //     logger.info(`Player change of volume:${attributes.volume}`);
+            // }
 
             if (isPlayerPaused) {
                 player.playVideo();
@@ -690,7 +693,7 @@ export default class SharedVideoManager {
 
                 // revert to original behavior (prevents pausing
                 // for participants not sharing the video to pause it)
-                $('#sharedVideo').css('pointer-events', 'auto');
+                //$('#sharedVideo').css('pointer-events', 'auto');
 
                 this.emitter.emit(
                     UIEvents.UPDATE_SHARED_VIDEO, null, 'removed');
