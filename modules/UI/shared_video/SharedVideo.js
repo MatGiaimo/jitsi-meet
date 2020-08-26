@@ -184,10 +184,13 @@ export default class SharedVideoManager {
       }
 
       v.seekTo = function(time) {
-        v.currentTime = time;
+        this.currentTime = time;
       }
 
       v.destroy = function() {
+        this.pause();
+        this.removeAttribute('src');
+        this.load();
         self.isPlayerAPILoaded = false;
         document.getElementById("sharedVideoPlayer").remove();
       }
@@ -331,6 +334,8 @@ export default class SharedVideoManager {
                       'onError': onPlayerError
                   }
               });
+              //start muted
+              p.mute();
 
               // add listener for volume changes
               p.addEventListener(
@@ -415,7 +420,7 @@ export default class SharedVideoManager {
       window.onPlayerReady = function(event) {
           const player = event.target;
 
-          player.mute();
+          //player.mute();
 
           player.playVideo();
 
@@ -689,7 +694,7 @@ export default class SharedVideoManager {
                     this.errorInPlayer.destroy();
                     this.errorInPlayer = null;
                 }
-                this.smartAudioUnmute();
+                //this.smartAudioUnmute();
 
                 // revert to original behavior (prevents pausing
                 // for participants not sharing the video to pause it)
@@ -718,14 +723,14 @@ export default class SharedVideoManager {
             return;
         }
 
-        if (muted) {
-            this.mutedWithUserInteraction = userInteraction;
-        } else if (this.player.getPlayerState() !== playerState.PAUSED) {
-            this.smartPlayerMute(true, false);
-
-            // Check if we need to update other participants
-            this.fireSharedVideoEvent();
-        }
+        // if (muted) {
+        //     this.mutedWithUserInteraction = userInteraction;
+        // } else if (this.player.getPlayerState() !== playerState.PAUSED) {
+        //     this.smartPlayerMute(true, false);
+        //
+        //     // Check if we need to update other participants
+        //     this.fireSharedVideoEvent();
+        // }
     }
 
     /**
