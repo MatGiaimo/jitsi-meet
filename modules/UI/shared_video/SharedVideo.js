@@ -317,17 +317,27 @@ export default class SharedVideoManager {
               //const showControls
               //    = APP.conference.isLocalId(self.from) ? 1 : 0;
               const showControls = true;
+
+              let playerVars = {
+                  'origin': location.origin,
+                  'fs': '0',
+                  'autoplay': 0,
+                  'controls': showControls,
+                  'rel': 0
+              };
+
+              let isPlaylist = self.yVideoId.startsWith("PL");
+
+              if (isPlaylist) {
+                playerVars.listType = 'playlist';
+                playerVars.list = self.yVideoId;
+              }
+
               const p = new YT.Player('sharedVideoIFrame', {
                   height: '100%',
                   width: '100%',
-                  videoId: self.yVideoId,
-                  playerVars: {
-                      'origin': location.origin,
-                      'fs': '0',
-                      'autoplay': 0,
-                      'controls': showControls,
-                      'rel': 0
-                  },
+                  videoId: !isPlaylist ? self.yVideoId : '',
+                  playerVars: playerVars,
                   events: {
                       'onReady': onPlayerReady,
                       'onStateChange': onPlayerStateChange,
@@ -878,8 +888,8 @@ class SharedVideoContainer extends LargeContainer {
  * @returns {boolean}
  */
 function getYoutubeLink(url) {
-    const p = /^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;// eslint-disable-line max-len
-
+    //const p = /^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;// eslint-disable-line max-len
+    const p = /^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|playlist\?list=))((\w|-){34}|(\w|-){11})(?:\S+)?$/;
 
     return url.match(p) ? RegExp.$1 : false;
 }
