@@ -125,6 +125,39 @@ export default class SharedVideoManager {
         }
     }
 
+    initArcade(url)
+    {
+      const iframe = document.createElement("iframe");
+      iframe.setAttribute("id","arcade");
+      iframe.src = url;
+      var container = document.getElementById("sharedVideoIFrame");
+      container.appendChild(iframe);
+
+      this.sharedVideo = new SharedVideoContainer(
+        { url, iframe, iframe});
+
+      VideoLayout.addLargeVideoContainer(
+        SHARED_VIDEO_CONTAINER_TYPE, this.sharedVideo);
+
+      APP.store.dispatch(participantJoined({
+        conference: APP.conference._room,
+        id: url,
+        isFakeParticipant: true,
+        name: "Arcade"
+      }));
+
+      iframe.onload = function() {
+        console.log("The iframe is loaded");
+      };
+
+      iframe.destroy = function() {
+        this.removeAttribute('src');
+        document.getElementById("arcade").remove();
+      }
+
+      this.player = iframe;
+    }
+
     // This code loads a video element and creates player wrapper methods
     initVideoAPI(attributes, url)
     {
@@ -515,8 +548,13 @@ export default class SharedVideoManager {
 
         if (!this.yVideoId)
         {
-          this.initVideoAPI(attributes, url);
-          this.initVideoEvents();
+          if (url.includes())
+          {
+            this.initArcade(url);
+          } else {
+            this.initVideoAPI(attributes, url);
+            this.initVideoEvents();
+        }
         }
         else {
           //this.url = yVideoId;
