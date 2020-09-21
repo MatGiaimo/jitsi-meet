@@ -116,10 +116,17 @@ var config = {
     // Valid values are in the range 6000 to 510000
     // opusMaxAvgBitrate: 20000,
 
+    // Enables redundancy for Opus
+    // enableOpusRed: false
+
     // Video
 
     // Sets the preferred resolution (height) for local video. Defaults to 720.
     // resolution: 720,
+
+    // How many participants while in the tile view mode, before the receiving video quality is reduced from HD to SD.
+    // Use -1 to disable.
+    // maxFullResolutionParticipants: 2,
 
     // w3c spec-compliant video constraints to use for video capture. Currently
     // used by browsers that return true from lib-jitsi-meet's
@@ -331,6 +338,9 @@ var config = {
     // UI
     //
 
+    // Hides lobby button
+    // hideLobbyButton: false,
+
     // Require users to always specify a display name.
     // requireDisplayName: true,
 
@@ -378,6 +388,10 @@ var config = {
     // deemed unsafe (due to the simplicity in the name) and a password is not
     // set or the lobby is not enabled.
     // enableInsecureRoomNameWarning: false,
+
+    // Whether to automatically copy invitation URL after creating a room.
+    // Document should be focused for this option to work
+    // enableAutomaticUrlCopy: false,
 
     // Stats
     //
@@ -487,6 +501,9 @@ var config = {
         //      "https://example.com/my-custom-analytics.js"
         // ],
     },
+
+    // Logs that should go be passed through the 'log' event if a handler is defined for it
+    // apiLogLevels: ['warn', 'log', 'error', 'info', 'debug'],
 
     // Information about the jitsi-meet instance we are connecting to, including
     // the user region as seen by the server.
@@ -610,8 +627,6 @@ var config = {
     // List of undocumented settings used in jitsi-meet
     /**
      _immediateReloadThreshold
-     autoRecord
-     autoRecordToken
      debug
      debugAudioLevels
      deploymentInfo
