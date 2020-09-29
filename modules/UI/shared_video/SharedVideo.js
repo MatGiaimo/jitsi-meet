@@ -515,6 +515,7 @@ export default class SharedVideoManager {
 
         if (!this.yVideoId)
         {
+          // check for piped in subtitle file and send as subtitle track
           this.initVideoAPI(attributes, url);
           this.initVideoEvents();
         }

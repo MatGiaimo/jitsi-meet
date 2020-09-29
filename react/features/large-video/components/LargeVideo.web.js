@@ -7,6 +7,7 @@ import { connect } from '../../base/redux';
 import { InviteMore, Subject } from '../../conference';
 import { fetchCustomBrandingData } from '../../dynamic-branding';
 import { Captions } from '../../subtitles/';
+import { appendScript , removeScript } from '../../../../modules/util/helpers.js';
 
 declare var interfaceConfig: Object;
 
@@ -53,6 +54,8 @@ class LargeVideo extends Component<Props> {
      */
     componentDidMount() {
         this.props._fetchCustomBrandingData();
+
+        appendScript("../../../../modules/util/videosub.js");
     }
 
     /**
@@ -101,7 +104,9 @@ class LargeVideo extends Component<Props> {
                             autoPlay = { !this.props._noAutoPlayVideo }
                             id = 'largeVideo'
                             muted = { true }
-                            playsInline = { true } /* for Safari on iOS to work */ />
+                            playsInline = { true } /* for Safari on iOS to work */ >
+                            <track id="subtitleTrack" kind="subtitle" srclang="en-US" label="English" />
+                        </video>
                     </div>
                 </div>
                 { interfaceConfig.DISABLE_TRANSCRIPTION_SUBTITLES
