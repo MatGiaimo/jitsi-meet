@@ -54,8 +54,6 @@ class LargeVideo extends Component<Props> {
      */
     componentDidMount() {
         this.props._fetchCustomBrandingData();
-
-        appendScript("../../../../modules/util/videosub.js");
     }
 
     /**
@@ -105,7 +103,6 @@ class LargeVideo extends Component<Props> {
                             id = 'largeVideo'
                             muted = { true }
                             playsInline = { true } /* for Safari on iOS to work */ >
-                            <track id="subtitleTrack" kind="subtitle" srclang="en-US" label="English" />
                         </video>
                     </div>
                 </div>

@@ -59,6 +59,7 @@ deploy-lib-jitsi-meet:
 		$(LIBJITSIMEET_DIR)/lib-jitsi-meet.min.map \
 		$(LIBJITSIMEET_DIR)/connection_optimization/external_connect.js \
 		$(LIBJITSIMEET_DIR)/modules/browser/capabilities.json \
+		videosub.js \
 		$(DEPLOY_DIR)
 
 deploy-libflac:

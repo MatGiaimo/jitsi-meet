@@ -20,6 +20,7 @@ import UIUtil from '../util/UIUtil';
 import Filmstrip from '../videolayout/Filmstrip';
 import LargeContainer from '../videolayout/LargeContainer';
 import VideoLayout from '../videolayout/VideoLayout';
+import { appendScript , removeScript } from '../../util/helpers.js';
 
 const logger = Logger.getLogger(__filename);
 
@@ -126,17 +127,26 @@ export default class SharedVideoManager {
     }
 
     // This code loads a video element and creates player wrapper methods
-    initVideoAPI(attributes, url)
+    initVideoAPI(attributes, url, subUrl)
     {
       const self = this;
       this.initialAttributes = attributes;
-      var v = document.createElement ("video");
+      var v = document.createElement("video");
+      var subTrack = document.createElement("track");
+
+      v.appendChild(subTrack)
       v.setAttribute("id", "sharedVideoPlayer");
       //v.controls = APP.conference.isLocalId(this.from) ? 1 : 0;
       v.controls = true;
       v.muted = true;
       v.setAttribute("style","height:100%;width:100%");
       v.src = url;
+
+      subTrack.id = "subtitleTrack";
+      subTrack.setAttribute("kind","subtitle");
+      subTrack.setAttribute("srclang","en-US");
+      subTrack.setAttribute("label","English");
+      subTrack.src = subUrl;
 
       // API wrappers
       const playerState = {
@@ -148,6 +158,7 @@ export default class SharedVideoManager {
 
       v.playVideo = function() {
         this.play();
+        appendScript("libs/videosub.js");
       }
 
       v.pauseVideo = function() {
@@ -193,6 +204,7 @@ export default class SharedVideoManager {
         this.load();
         self.isPlayerAPILoaded = false;
         document.getElementById("sharedVideoPlayer").remove();
+        removeScript("libs/videosub.js");
       }
 
       this.video = v;
@@ -515,8 +527,11 @@ export default class SharedVideoManager {
 
         if (!this.yVideoId)
         {
-          // check for piped in subtitle file and send as subtitle track
-          this.initVideoAPI(attributes, url);
+          // check for combined subtitle file url and send as subtitle track
+          var urls = url.split('-sub-');
+          url = urls[0];
+          this.subTrackUrl = urls[1];
+          this.initVideoAPI(attributes, url, this.subTrackUrl);
           this.initVideoEvents();
         }
         else {
