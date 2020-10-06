@@ -75,25 +75,30 @@
 				};
 			};
 			if (subtitlesrc.indexOf('.srt') != -1) {									// we have a track tag and it's a .srt file
-				var videowidth = $VIDEOSUB(el).attr('width');							// set subtitle div as wide as video
-				var fontsize = 12;
+				var videowidth = el.clientWidth;
+				var videoheight = el.clientHeight;						// set subtitle div as wide as video
+				var fontsize = 14;
 				if (videowidth > 400) {
 					fontsize = fontsize + Math.ceil((videowidth - 400) / 100);
 				}
-				var videocontainer = w.document.createElement("div");
-				$VIDEOSUB(videocontainer).css({
-					'position': "relative"
-				});
-				// wrap the existing video into the new container
-				videocontainer.appendChild(el.cloneNode(true));
-				el.parentNode.replaceChild(videocontainer, el);
-				el = videocontainer.firstChild;
+				var videocontainer = w.document.getElementById("sharedVideoIFrame");
+				var calcheight = Math.ceil(videoheight/4);
+				var calcwidth = Math.ceil(videowidth/3);
+				// var videocontainer = w.document.createElement("div");
+				// $VIDEOSUB(videocontainer).css({
+				// 	'position': "relative"
+				// });
+				// // wrap the existing video into the new container
+				// videocontainer.appendChild(el.cloneNode(true));
+				// el.parentNode.replaceChild(videocontainer, el);
+				// el = videocontainer.firstChild;
 				var subcontainer = w.document.createElement("div");
+				subcontainer.id = "videoSubContainer";
 				$VIDEOSUB(subcontainer).css({
 					'position': 'absolute',
-					'bottom': '34px',
-					'width': (videowidth-50)+'px',
-					'padding': '0 25px 0 25px',
+					'width': videowidth+'px',
+					'bottom': calcheight+'px',
+					'padding': '0 '+calcwidth+'px 0 25px',
 					'textAlign': 'center',
 					'backgroundColor': 'transparent',
 					'color': '#ffffff',
@@ -154,6 +159,18 @@
 					// check if the next subtitle is in the current time range
 					if (this.currentTime.toFixed(1) > videosub_timecode_min(el.subtitles[el.subcount][1])  &&  this.currentTime.toFixed(1) < videosub_timecode_max(el.subtitles[el.subcount][1])) {
 						subtitle = el.subtitles[el.subcount][2];
+
+						var secondLine = el.subtitles[el.subcount][3];
+
+						if (secondLine && secondLine !== undefined){
+							subtitle += ' '+secondLine;
+						}
+
+						var calcheight = Math.ceil(el.clientHeight/3);
+						var calcwidth = Math.ceil(el.clientWidth/2);
+						$VIDEOSUB('#videoSubContainer').css('width', el.clientWidth+'px');
+						$VIDEOSUB('#videoSubContainer').css('bottom', calcheight+'px');
+						$VIDEOSUB('#videoSubContainer').css('padding', '0 '+calcwidth+'px 0 25px');
 					}
 					// is there a next timecode?
 					if (this.currentTime.toFixed(1) > videosub_timecode_max(el.subtitles[el.subcount][1])  && el.subcount < (el.subtitles.length-1)) {

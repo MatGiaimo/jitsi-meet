@@ -158,7 +158,6 @@ export default class SharedVideoManager {
 
       v.playVideo = function() {
         this.play();
-        appendScript("libs/videosub.js");
       }
 
       v.pauseVideo = function() {
@@ -204,6 +203,7 @@ export default class SharedVideoManager {
         this.load();
         self.isPlayerAPILoaded = false;
         document.getElementById("sharedVideoPlayer").remove();
+        document.getElementById("videoSubContainer").remove();
         removeScript("libs/videosub.js");
       }
 
@@ -254,6 +254,8 @@ export default class SharedVideoManager {
 
         var container = document.getElementById("sharedVideoIFrame");
         container.appendChild(player);
+
+        appendScript("libs/videosub.js");
 
         let iframe = player;
         player.playVideo();
