@@ -645,7 +645,7 @@ export default class SharedVideoManager {
 
         var isPlaylist = false;
         if (this.yVideoId) isPlaylist = this.yVideoId.startsWith("PL");
-        
+
         var plIdx = -1;
         if (isPlaylist) {
           plIdx = this.player.getPlaylistIndex();
@@ -761,11 +761,11 @@ export default class SharedVideoManager {
      * i.e. pressing the mute button or it was programatically triggerred
      */
     onLocalAudioMuted(muted, userInteraction) {
-        const playerState = typeof YT !== 'undefined' ? YT.PlayerState : player.playerState;
-
         if (!this.player) {
             return;
         }
+
+        const playerState = typeof YT !== 'undefined' ? YT.PlayerState : player.playerState;
 
         // if (muted) {
         //     this.mutedWithUserInteraction = userInteraction;

@@ -177,7 +177,7 @@
 						el.subcount++;
 					}
 					// update subtitle div
-					this.nextSibling.innerHTML = subtitle;
+					if (this.nextSibling) this.nextSibling.innerHTML = subtitle;
 				});
 
 			}
