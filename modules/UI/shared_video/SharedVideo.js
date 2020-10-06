@@ -359,7 +359,7 @@ export default class SharedVideoManager {
                   }
               });
               //start muted
-              p.mute();
+              if (!isPlaylist) p.mute();
 
               // add listener for volume changes
               p.addEventListener(
@@ -555,8 +555,16 @@ export default class SharedVideoManager {
 
         const playerState = typeof YT !== 'undefined' ? YT.PlayerState : player.playerState;
 
+        var isPlaylist = false;
+
+        if (this.yVideoId) isPlaylist = this.yVideoId.startsWith("PL");
+
         // eslint-disable-next-line eqeqeq
         if (attributes.state == 'playing') {
+
+            if (isPlaylist && attributes.plIdx && player.getPlaylistIndex() !== Number(attributes.plIdx)) {
+              player.playVideoAt(attributes.plIdx);
+            }
 
             const isPlayerPaused
                 = this.player.getPlayerState() === playerState.PAUSED;
@@ -635,11 +643,18 @@ export default class SharedVideoManager {
 
         const state = this.player.getPlayerState();
 
-        // if its paused and haven't been pause - send paused
+        var isPlaylist = false;
+        if (this.yVideoId) isPlaylist = this.yVideoId.startsWith("PL");
+        
+        var plIdx = -1;
+        if (isPlaylist) {
+          plIdx = this.player.getPlaylistIndex();
+        }
 
+        // if its paused and haven't been pause - send paused
         if (state === playerState.PAUSED && sendPauseEvent) {
             this.emitter.emit(UIEvents.UPDATE_SHARED_VIDEO,
-                this.url, 'pause', this.player.getCurrentTime());
+                this.url, 'pause', this.player.getCurrentTime(), false, 100, plIdx);
         } else if (state === playerState.PLAYING) {
             // if its playing and it was paused - send update with time
             // if its playing and was playing just send update with time
@@ -647,7 +662,8 @@ export default class SharedVideoManager {
                 this.url, 'playing',
                 this.player.getCurrentTime(),
                 this.player.isMuted(),
-                this.player.getVolume());
+                this.player.getVolume(),
+                plIdx);
         }
     }
 

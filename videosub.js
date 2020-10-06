@@ -82,8 +82,8 @@
 					fontsize = fontsize + Math.ceil((videowidth - 400) / 100);
 				}
 				var videocontainer = w.document.getElementById("sharedVideoIFrame");
-				var calcheight = Math.ceil(videoheight/4);
-				var calcwidth = Math.ceil(videowidth/3);
+				var calcheight = Math.ceil(videoheight/3.5);
+				var calcwidth = Math.ceil(videowidth/2);
 				// var videocontainer = w.document.createElement("div");
 				// $VIDEOSUB(videocontainer).css({
 				// 	'position': "relative"
@@ -157,7 +157,7 @@
 				$VIDEOSUB(el).addListener('timeupdate', function(an_event){
 					var subtitle = '';
 					// check if the next subtitle is in the current time range
-					if (this.currentTime.toFixed(1) > videosub_timecode_min(el.subtitles[el.subcount][1])  &&  this.currentTime.toFixed(1) < videosub_timecode_max(el.subtitles[el.subcount][1])) {
+					if (el.subtitles && this.currentTime.toFixed(1) > videosub_timecode_min(el.subtitles[el.subcount][1])  &&  this.currentTime.toFixed(1) < videosub_timecode_max(el.subtitles[el.subcount][1])) {
 						subtitle = el.subtitles[el.subcount][2];
 
 						var secondLine = el.subtitles[el.subcount][3];
@@ -166,14 +166,14 @@
 							subtitle += ' '+secondLine;
 						}
 
-						var calcheight = Math.ceil(el.clientHeight/3);
+						var calcheight = Math.ceil(el.clientHeight/3.5);
 						var calcwidth = Math.ceil(el.clientWidth/2);
 						$VIDEOSUB('#videoSubContainer').css('width', el.clientWidth+'px');
 						$VIDEOSUB('#videoSubContainer').css('bottom', calcheight+'px');
 						$VIDEOSUB('#videoSubContainer').css('padding', '0 '+calcwidth+'px 0 25px');
 					}
 					// is there a next timecode?
-					if (this.currentTime.toFixed(1) > videosub_timecode_max(el.subtitles[el.subcount][1])  && el.subcount < (el.subtitles.length-1)) {
+					if (el.subtitles && this.currentTime.toFixed(1) > videosub_timecode_max(el.subtitles[el.subcount][1])  && el.subcount < (el.subtitles.length-1)) {
 						el.subcount++;
 					}
 					// update subtitle div
