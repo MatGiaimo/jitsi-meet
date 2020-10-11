@@ -2440,7 +2440,7 @@ export default {
         /* eslint-disable max-params */
         APP.UI.addListener(
             UIEvents.UPDATE_SHARED_VIDEO,
-            (url, state, time, isMuted, volume) => {
+            (url, state, time, isMuted, volume, plIdx) => {
                 /* eslint-enable max-params */
                 // send start and stop commands once, and remove any updates
                 // that had left
@@ -2457,7 +2457,8 @@ export default {
                             time,
                             muted: isMuted,
                             volume,
-                            from: localParticipant.id
+                            from: localParticipant.id,
+                            plIdx: plIdx
                         }
                     });
                 } else {
@@ -2470,7 +2471,8 @@ export default {
                             state,
                             time,
                             muted: isMuted,
-                            volume
+                            volume,
+                            plIdx: plIdx
                         }
                     });
                 }

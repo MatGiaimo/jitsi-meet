@@ -4,6 +4,8 @@ import Logger from 'jitsi-meet-logger';
 
 import SmallVideo from '../videolayout/SmallVideo';
 
+import { LAYOUTS, getCurrentLayout } from '../../../react/features/video-layout';
+
 const logger = Logger.getLogger(__filename);
 
 /**
@@ -46,18 +48,42 @@ export default class SharedVideoThumb extends SmallVideo {
         container.id = spanId;
         container.className = 'videocontainer';
 
-        // add the avatar
-        const avatar = document.createElement('img');
+        var v = window.sharedVideoPlayer;
 
-        avatar.className = 'sharedVideoAvatar';
+        // YouTube
+        if (v.playerInfo) {
+          //add the avatar
+          const avatar = document.createElement('img');
 
-        let yVideoId = getYoutubeLink(this.url);
-        if (!yVideoId)
-        {}
-        else{
-          avatar.src = `https://img.youtube.com/vi/${yVideoId}/0.jpg`;
+          avatar.className = 'sharedVideoAvatar';
+
+          v.addEventListener('onStateChange', function(e){
+              if (e.data === 1) {
+                let yVideoId = getYoutubeLink(v.getVideoUrl());
+                avatar.src = `https://img.youtube.com/vi/${yVideoId}/0.jpg`;
+              }
+          },false);
+
+          container.appendChild(avatar);
+        } else {
+          // Video
+          var canvas = document.createElement('canvas');
+          canvas.id = 'smallVideo';
+          var context = canvas.getContext('2d');
+
+          canvas.className = 'sharedVideoAvatar';
+
+          var cw = v.videoWidth || 1280;
+          var ch = v.videoHeight || 720;
+          canvas.width = cw;
+          canvas.height = ch;
+
+          v.addEventListener('play', function(){
+            updateVideoThumb(this,context,cw,ch);
+          },false);
+
+          container.appendChild(canvas);
         }
-        container.appendChild(avatar);
 
         const displayNameContainer = document.createElement('div');
 
@@ -104,4 +130,18 @@ function getYoutubeLink(url) {
 
 
     return url.match(p) ? RegExp.$1 : false;
+}
+
+function updateVideoThumb(v,c,w,h) {
+    if(v.paused || v.ended) return false;
+
+    setTimeout(updateVideoThumb,20,v,c,w,h);
+
+    const currentLayout = getCurrentLayout(APP.store.getState());
+
+    if (currentLayout !== LAYOUTS.TILE_VIEW && Math.floor(v.getCurrentTime()) % 120 !== 0) {
+      return false;
+    }
+
+    c.drawImage(v,0,0,w,h);
 }

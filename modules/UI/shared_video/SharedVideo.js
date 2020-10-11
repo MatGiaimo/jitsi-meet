@@ -210,7 +210,7 @@ export default class SharedVideoManager {
       this.video = v;
     }
 
-    initVideoEvents() {
+    initVideoEvents(title) {
       const self = this;
 
       window.onPlayerStateChange = function(event) {
@@ -252,6 +252,8 @@ export default class SharedVideoManager {
 
         const player = event.target;
 
+        window.sharedVideoPlayer = player;
+
         var container = document.getElementById("sharedVideoIFrame");
         container.appendChild(player);
 
@@ -274,7 +276,7 @@ export default class SharedVideoManager {
           conference: APP.conference._room,
           id: self.url,
           isFakeParticipant: true,
-          name: "Movis"
+          name: title || "Movis"
         }));
 
         APP.store.dispatch(pinParticipant(self.url));
@@ -359,7 +361,8 @@ export default class SharedVideoManager {
                   }
               });
               //start muted
-              if (!isPlaylist) p.mute();
+              //if (!isPlaylist) p.mute();
+              window.sharedVideoPlayer = p;
 
               // add listener for volume changes
               p.addEventListener(
@@ -529,12 +532,15 @@ export default class SharedVideoManager {
 
         if (!this.yVideoId)
         {
+          // check for title
+          var title = url.split('-title-');
+          title = unescape(title[1]);
           // check for combined subtitle file url and send as subtitle track
           var urls = url.split('-sub-');
           url = urls[0];
           this.subTrackUrl = urls[1];
           this.initVideoAPI(attributes, url, this.subTrackUrl);
-          this.initVideoEvents();
+          this.initVideoEvents(title);
         }
         else {
           //this.url = yVideoId;
@@ -732,6 +738,7 @@ export default class SharedVideoManager {
 
                 if (this.player) {
                     this.player.destroy();
+                    window.sharedVideoPlayer = null;
                     this.player = null;
                 } else if (this.errorInPlayer) {
                     // if there is an error in player, remove that instance

@@ -82,7 +82,7 @@
 					fontsize = fontsize + Math.ceil((videowidth - 400) / 100);
 				}
 				var videocontainer = w.document.getElementById("sharedVideoIFrame");
-				var calcheight = Math.ceil(videoheight/3.5);
+				var calcheight = Math.ceil(videoheight/6);
 				var calcwidth = Math.ceil(videowidth/2);
 				// var videocontainer = w.document.createElement("div");
 				// $VIDEOSUB(videocontainer).css({
@@ -166,7 +166,7 @@
 							subtitle += ' '+secondLine;
 						}
 
-						var calcheight = Math.ceil(el.clientHeight/3.5);
+						var calcheight = Math.ceil(el.clientHeight/6);
 						var calcwidth = Math.ceil(el.clientWidth/2);
 						$VIDEOSUB('#videoSubContainer').css('width', el.clientWidth+'px');
 						$VIDEOSUB('#videoSubContainer').css('bottom', calcheight+'px');
