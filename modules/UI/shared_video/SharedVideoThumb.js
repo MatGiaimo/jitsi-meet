@@ -73,8 +73,12 @@ export default class SharedVideoThumb extends SmallVideo {
 
           canvas.className = 'sharedVideoAvatar';
 
-          var cw = v.videoWidth || 1280;
-          var ch = v.videoHeight || 720;
+          const state = APP.store.getState();
+          const { thumbnailSize } = state['features/filmstrip'].tileViewDimensions;
+
+          var cw = thumbnailSize !== undefined ? thumbnailSize.width : v.videoWidth || 1280;
+          var ch = thumbnailSize !== undefined ? thumbnailSize.height : v.videoHeight || 720;
+
           canvas.width = cw;
           canvas.height = ch;
 
