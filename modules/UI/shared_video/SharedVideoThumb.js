@@ -82,11 +82,33 @@ export default class SharedVideoThumb extends SmallVideo {
           canvas.width = cw;
           canvas.height = ch;
 
+          var subcontainer = document.createElement("div");
+          subcontainer.id = "videoSubContainerThumb";
+          var fontsize = 12;
+          var $subcontainer = $(subcontainer);
+          $subcontainer.css({
+            'position': 'absolute',
+            'bottom': '10px',
+            'padding': '0px 0px 0px 90px',
+            'textAlign': 'center',
+            'backgroundColor': 'transparent',
+            'color': '#ffffff',
+            'fontFamily': 'Helvetica, Arial, sans-serif',
+            'fontSize': fontsize+'px',
+            'fontWeight': 'bold',
+            'textShadow': '#000000 1px 1px 0px'
+          });
+          $subcontainer.addClass('videosubbar');
           v.addEventListener('play', function(){
-            updateVideoThumb(this,context,cw,ch);
+            updateVideoThumb(this,context,$subcontainer,cw,ch);
           },false);
 
+          $('body').on('DOMSubtreeModified', '#videoSubContainer', function(){
+            $subcontainer.text($('#videoSubContainer').text());
+          });
+
           container.appendChild(canvas);
+          container.appendChild(subcontainer);
         }
 
         const displayNameContainer = document.createElement('div');
@@ -136,12 +158,19 @@ function getYoutubeLink(url) {
     return url.match(p) ? RegExp.$1 : false;
 }
 
-function updateVideoThumb(v,c,w,h) {
+function updateVideoThumb(v,c,$s,w,h) {
     if(v.paused || v.ended) return false;
 
-    setTimeout(updateVideoThumb,20,v,c,w,h);
+    setTimeout(updateVideoThumb,20,v,c,$s,w,h);
 
     const currentLayout = getCurrentLayout(APP.store.getState());
+
+    if (currentLayout === LAYOUTS.TILE_VIEW) {
+      $s.show();
+    }
+    else {
+      $s.hide();
+    }
 
     if (currentLayout !== LAYOUTS.TILE_VIEW && Math.floor(v.getCurrentTime()) % 120 !== 0) {
       return false;
