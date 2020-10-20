@@ -84,7 +84,7 @@ export default class SharedVideoThumb extends SmallVideo {
 
           var subcontainer = document.createElement("div");
           subcontainer.id = "videoSubContainerThumb";
-          var fontsize = 12;
+          var fontsize = 23;
           var $subcontainer = $(subcontainer);
           $subcontainer.css({
             'position': 'absolute',
