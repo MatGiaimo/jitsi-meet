@@ -140,7 +140,11 @@ const config = {
         // Allow the use of the real filename of the module being executed. By
         // default Webpack does not leak path-related information and provides a
         // value that is a mock (/index.js).
-        __filename: true
+        __filename: true,
+
+        // Provide some empty Node modules (required by olm).
+        crypto: 'empty',
+        fs: 'empty'
     },
     optimization: {
         concatenateModules: minimize,
@@ -167,6 +171,7 @@ const config = {
     ].filter(Boolean),
     resolve: {
         alias: {
+            'focus-visible': 'focus-visible/dist/focus-visible.min.js',
             jquery: `jquery/dist/jquery${minimize ? '.min' : ''}.js`
         },
         aliasFields: [
@@ -273,7 +278,7 @@ module.exports = [
             library: 'JitsiMeetExternalAPI',
             libraryTarget: 'umd'
         }),
-        performance: getPerformanceHints(30 * 1024)
+        performance: getPerformanceHints(35 * 1024)
     })
 ];
 

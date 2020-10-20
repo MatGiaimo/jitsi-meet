@@ -15,13 +15,12 @@ import { VIDEO_TYPE } from '../../../react/features/base/media';
 import { CHAT_SIZE } from '../../../react/features/chat';
 import {
     updateKnownLargeVideoResolution
-} from '../../../react/features/large-video';
+} from '../../../react/features/large-video/actions';
 import { PresenceLabel } from '../../../react/features/presence-status';
 /* eslint-enable no-unused-vars */
 import UIEvents from '../../../service/UI/UIEvents';
 import { createDeferred } from '../../util/helpers';
 import AudioLevels from '../audio_levels/AudioLevels';
-import UIUtil from '../util/UIUtil';
 
 import { VideoContainer, VIDEO_CONTAINER_TYPE } from './VideoContainer';
 
@@ -68,7 +67,30 @@ export default class LargeVideoManager {
         // use the same video container to handle desktop tracks
         this.addContainer(DESKTOP_CONTAINER_TYPE, this.videoContainer);
 
+        /**
+         * The preferred width passed as an argument to {@link updateContainerSize}.
+         *
+         * @type {number|undefined}
+         */
+        this.preferredWidth = undefined;
+
+        /**
+         * The preferred height passed as an argument to {@link updateContainerSize}.
+         *
+         * @type {number|undefined}
+         */
+        this.preferredHeight = undefined;
+
+        /**
+         * The calculated width that will be used for the large video.
+         * @type {number}
+         */
         this.width = 0;
+
+        /**
+         * The calculated height that will be used for the large video.
+         * @type {number}
+         */
         this.height = 0;
 
         /**
@@ -323,8 +345,15 @@ export default class LargeVideoManager {
     /**
      * Update container size.
      */
-    updateContainerSize() {
-        let widthToUse = UIUtil.getAvailableVideoWidth();
+    updateContainerSize(width, height) {
+        if (typeof width === 'number') {
+            this.preferredWidth = width;
+        }
+        if (typeof height === 'number') {
+            this.preferredHeight = height;
+        }
+
+        let widthToUse = this.preferredWidth || window.innerWidth;
         const { isOpen } = APP.store.getState()['features/chat'];
 
         if (isOpen) {
@@ -336,7 +365,7 @@ export default class LargeVideoManager {
         }
 
         this.width = widthToUse;
-        this.height = window.innerHeight;
+        this.height = this.preferredHeight || window.innerHeight;
     }
 
     /**
