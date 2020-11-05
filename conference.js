@@ -41,8 +41,7 @@ import {
     lockStateChanged,
     onStartMutedPolicyChanged,
     p2pStatusChanged,
-    sendLocalParticipant,
-    setDesktopSharingEnabled
+    sendLocalParticipant
 } from './react/features/base/conference';
 import {
     checkAndNotifyForNewDevice,
@@ -65,6 +64,8 @@ import {
     JitsiTrackEvents
 } from './react/features/base/lib-jitsi-meet';
 import {
+    getStartWithAudioMuted,
+    getStartWithVideoMuted,
     isVideoMutedByUser,
     MEDIA_TYPE,
     setAudioAvailable,
@@ -96,7 +97,7 @@ import {
     destroyLocalTracks,
     getLocalJitsiAudioTrack,
     getLocalJitsiVideoTrack,
-    isLocalVideoTrackMuted,
+    isLocalCameraTrackMuted,
     isLocalTrackMuted,
     isUserInteractionRequiredForUnmute,
     replaceLocalTrack,
@@ -439,17 +440,8 @@ export default {
      * the tracks won't exist).
      */
     _localTracksInitialized: false,
-    isSharingScreen: false,
 
-    /**
-     * Indicates if the desktop sharing functionality has been enabled.
-     * It takes into consideration the status returned by
-     * {@link JitsiMeetJS.isDesktopSharingEnabled()}. The latter can be false
-     * either if the desktop sharing is not supported by the current browser
-     * or if it was disabled through lib-jitsi-meet specific options (check
-     * config.js for listed options).
-     */
-    isDesktopSharingEnabled: false,
+    isSharingScreen: false,
 
     /**
      * The local audio track (if any).
@@ -677,14 +669,6 @@ export default {
         con.addEventListener(JitsiConnectionEvents.CONNECTION_FAILED, _connectionFailedHandler);
         APP.connection = connection = con;
 
-        // Desktop sharing related stuff:
-        this.isDesktopSharingEnabled
-            = JitsiMeetJS.isDesktopSharingEnabled();
-        eventEmitter.emit(JitsiMeetConferenceEvents.DESKTOP_SHARING_ENABLED_CHANGED, this.isDesktopSharingEnabled);
-
-        APP.store.dispatch(
-            setDesktopSharingEnabled(this.isDesktopSharingEnabled));
-
         this._createRoom(tracks);
         APP.remoteControl.init();
 
@@ -731,10 +715,10 @@ export default {
         const initialOptions = {
             startAudioOnly: config.startAudioOnly,
             startScreenSharing: config.startScreenSharing,
-            startWithAudioMuted: config.startWithAudioMuted
+            startWithAudioMuted: getStartWithAudioMuted(APP.store.getState())
                 || config.startSilent
                 || isUserInteractionRequiredForUnmute(APP.store.getState()),
-            startWithVideoMuted: config.startWithVideoMuted
+            startWithVideoMuted: getStartWithVideoMuted(APP.store.getState())
                 || isUserInteractionRequiredForUnmute(APP.store.getState())
         };
 
@@ -809,7 +793,7 @@ export default {
     isLocalVideoMuted() {
         // If the tracks are not ready, read from base/media state
         return this._localTracksInitialized
-            ? isLocalVideoTrackMuted(
+            ? isLocalCameraTrackMuted(
                 APP.store.getState()['features/base/tracks'])
             : isVideoMutedByUser(APP.store);
     },
@@ -1130,20 +1114,6 @@ export default {
      */
     getParticipantById(id) {
         return room ? room.getParticipantById(id) : null;
-    },
-
-    /**
-     * Get participant connection status for the participant.
-     *
-     * @param {string} id participant's identifier(MUC nickname)
-     *
-     * @returns {ParticipantConnectionStatus|null} the status of the participant
-     * or null if no such participant is found or participant is the local user.
-     */
-    getParticipantConnectionStatus(id) {
-        const participant = this.getParticipantById(id);
-
-        return participant ? participant.getConnectionStatus() : null;
     },
 
     /**
@@ -1544,9 +1514,8 @@ export default {
         if (this.videoSwitchInProgress) {
             return Promise.reject('Switch in progress.');
         }
-        if (!this.isDesktopSharingEnabled) {
-            return Promise.reject(
-                'Cannot toggle screen sharing: not supported.');
+        if (!JitsiMeetJS.isDesktopSharingEnabled()) {
+            return Promise.reject('Cannot toggle screen sharing: not supported.');
         }
 
         if (this.isAudioOnly()) {
@@ -2604,6 +2573,20 @@ export default {
         // https://bugs.chromium.org/p/chromium/issues/detail?id=997689
         const hasDefaultMicChanged = newDevices.audioinput === 'default';
 
+        // This is the case when the local video is muted and a preferred device is connected.
+        if (requestedInput.video && this.isLocalVideoMuted()) {
+            // We want to avoid creating a new video track in order to prevent turning on the camera.
+            requestedInput.video = false;
+            APP.store.dispatch(updateSettings({ // Update the current selected camera for the device selection dialog.
+                cameraDeviceId: newDevices.videoinput
+            }));
+            delete newDevices.videoinput;
+
+            // Removing the current video track in order to force the unmute to select the preferred device.
+            this.useVideoStream(null);
+
+        }
+
         promises.push(
             mediaDeviceHelper.createLocalTracksAfterDeviceListChanged(
                     createLocalTracksF,
@@ -3025,7 +3008,7 @@ export default {
      * @param {boolean} muted - New muted status.
      */
     setVideoMuteStatus(muted) {
-        APP.UI.setVideoMuted(this.getMyUserId(), muted);
+        APP.UI.setVideoMuted(this.getMyUserId());
         APP.API.notifyVideoMutedStatusChanged(muted);
     },
 
