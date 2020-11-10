@@ -695,6 +695,10 @@
     }
 }
 
+.display-avatar-only-tile {
+  display: none !important;
+}
+
 .presence-label {
     color: $participantNameColor;
     font-size: 12px;

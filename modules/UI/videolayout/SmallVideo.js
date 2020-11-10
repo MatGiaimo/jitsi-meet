@@ -484,6 +484,8 @@ export default class SmallVideo {
 
         const displayModeInput = this.computeDisplayModeInput();
 
+        const currentLayout = getCurrentLayout(APP.store.getState());
+
         // Determine whether video, avatar or blackness should be displayed
         this.displayMode = this.selectDisplayMode(displayModeInput);
 
@@ -507,7 +509,13 @@ export default class SmallVideo {
         case DISPLAY_AVATAR:
         default:
             displayModeString = 'avatar';
-            this.$container.addClass('display-avatar-only');
+            const currentLayout = getCurrentLayout(APP.store.getState());
+            if (currentLayout === LAYOUTS.TILE_VIEW) {
+              this.$container.addClass('display-avatar-only-tile');
+            }
+            else {
+              this.$container.addClass('display-avatar-only');
+            }
             break;
         }
 
