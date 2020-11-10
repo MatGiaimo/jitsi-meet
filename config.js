@@ -273,9 +273,13 @@ var config = {
     //    // at least 360 pixels tall. If the thumbnail height reaches 720 pixels then the application will switch to
     //    // the high quality.
     //    minHeightForQualityLvl: {
-    //        360: 'standard,
+    //        360: 'standard',
     //        720: 'high'
-    //    }
+    //    },
+    //
+    //    // Provides a way to resize the desktop track to 720p (if it is greater than 720p) before creating a canvas
+    //    // for the presenter mode (camera picture-in-picture mode with screenshare).
+    //    resizeDesktopForPresenter: false
     // },
 
     // // Options for the recording limit notification.
@@ -357,16 +361,11 @@ var config = {
     // Default language for the user interface.
     // defaultLanguage: 'en',
 
-    // If true all users without a token will be considered guests and all users
-    // with token will be considered non-guests. Only guests will be allowed to
-    // edit their profile.
-    enableUserRolesBasedOnToken: false,
+    // Disables profile and the edit of all fields from the profile settings (display name and email)
+    // disableProfile: false,
 
     // Whether or not some features are checked based on token.
     // enableFeaturesBasedOnToken: false,
-
-    // Enable lock room for all moderators, even when userRolesBasedOnToken is enabled and participants are guests.
-    // lockRoomGuestEnabled: false,
 
     // When enabled the password used for locking a room is restricted to up to the number of digits specified
     // roomPasswordNumberOfDigits: 10,
