@@ -6,7 +6,8 @@ import { CLIENT_RESIZED } from '../base/responsive-ui';
 import {
     getCurrentLayout,
     LAYOUTS,
-    shouldDisplayTileView
+    shouldDisplayTileView,
+    getTileViewGridDimensions
 } from '../video-layout';
 
 import { SET_HORIZONTAL_VIEW_DIMENSIONS, SET_TILE_VIEW_DIMENSIONS } from './actionTypes';
@@ -27,7 +28,7 @@ MiddlewareRegistry.register(store => next => action => {
 
         switch (layout) {
         case LAYOUTS.TILE_VIEW: {
-            const { gridDimensions } = state['features/filmstrip'].tileViewDimensions;
+            const gridDimensions = getTileViewGridDimensions(state);
             const { clientHeight, clientWidth } = state['features/base/responsive-ui'];
             const { isOpen } = state['features/chat'];
 
