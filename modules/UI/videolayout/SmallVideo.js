@@ -510,7 +510,7 @@ export default class SmallVideo {
         default:
             displayModeString = 'avatar';
             const currentLayout = getCurrentLayout(APP.store.getState());
-            if (currentLayout === LAYOUTS.TILE_VIEW) {
+            if (currentLayout === LAYOUTS.TILE_VIEW && this.container.id !== 'sharedVideoContainer') {
               this.$container.addClass('display-avatar-only-tile');
             }
             else {

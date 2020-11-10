@@ -4,7 +4,6 @@ import { getPinnedParticipant, getParticipantCount } from '../base/participants'
 import { isYoutubeVideoPlaying } from '../youtube-player/functions';
 
 import { LAYOUTS } from './constants';
-import { getPinnedParticipant } from '../base/participants';
 import { TILE_ASPECT_RATIO } from '../filmstrip/constants';
 
 declare var interfaceConfig: Object;

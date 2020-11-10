@@ -697,6 +697,22 @@
 
 .display-avatar-only-tile {
   display: none !important;
+
+  .avatar-container {
+      visibility: visible;
+  }
+
+  .displayNameContainer {
+      visibility: hidden;
+  }
+
+  .videocontainer__hoverOverlay {
+      visibility: hidden;
+  }
+
+  video {
+      visibility: hidden;
+  }
 }
 
 .presence-label {
