@@ -273,11 +273,13 @@ export default class SharedVideoManager {
         VideoLayout.addLargeVideoContainer(
           SHARED_VIDEO_CONTAINER_TYPE, self.sharedVideo);
 
+        if (typeof title === 'undefined') title = "Movis";
+
         APP.store.dispatch(participantJoined({
           conference: APP.conference._room,
           id: self.url,
           isFakeParticipant: true,
-          name: title || "Movis"
+          name: title
         }));
 
         APP.store.dispatch(pinParticipant(self.url));

@@ -6,35 +6,37 @@ var config = {
 
     hosts: {
         // XMPP domain.
-        domain: 'meet.jitsi',
+        domain: 'jitsi-meet.example.com',
 
         // When using authentication, domain for guest users.
         // anonymousdomain: 'guest.example.com',
 
         // Domain for authenticated users. Defaults to <domain>.
-        // authdomain: 'meet.jitsi',
+        // authdomain: 'jitsi-meet.example.com',
 
         // Call control component (Jigasi).
-        // call_control: 'callcontrol.meet.jitsi',
+        // call_control: 'callcontrol.jitsi-meet.example.com',
 
         // Focus component domain. Defaults to focus.<domain>.
-        // focus: 'focus.meet.jitsi',
+        // focus: 'focus.jitsi-meet.example.com',
 
         // XMPP MUC domain. FIXME: use XEP-0030 to discover it.
-        muc: 'muc.meet.jitsi',
+        muc: 'conference.jitsi-meet.example.com'
     },
 
     // BOSH URL. FIXME: use XEP-0156 to discover it.
-    bosh: '/http-bind',
+    bosh: '//jitsi-meet.example.com/http-bind',
 
     // Websocket URL
-    // websocket: 'wss://meet.jitsi/xmpp-websocket',
+    // websocket: 'wss://jitsi-meet.example.com/xmpp-websocket',
 
     // The name of client node advertised in XEP-0115 'c' stanza
     clientNode: 'http://jitsi.org/jitsimeet',
 
     // The real JID of focus participant - can be overridden here
-    focusUserJid: 'focus@auth.meet.jitsi',
+    // Do not change username - FIXME: Make focus username configurable
+    // https://github.com/jitsi/jitsi-meet/issues/7376
+    // focusUserJid: 'focus@auth.jitsi-meet.example.com',
 
 
     // Testing / experimental features.
@@ -61,7 +63,7 @@ var config = {
         // on while screensharing is in progress, the max bitrate is automatically
         // adjusted to 2.5 Mbps. This takes a value between 0 and 1 which determines
         // the probability for this to be enabled.
-        // capScreenshareBitrate: 1 // 0 to disable
+        capScreenshareBitrate: 0 // 0 to disable
 
         // Enable callstats only for a percentage of users.
         // This takes a value between 0 and 100 which determines the probability for
@@ -116,7 +118,7 @@ var config = {
     // Sets the preferred target bitrate for the Opus audio codec by setting its
     // 'maxaveragebitrate' parameter. Currently not available in p2p mode.
     // Valid values are in the range 6000 to 510000
-    // opusMaxAvgBitrate: 20000,
+    // opusMaxAverageBitrate: 20000,
 
     // Enables redundancy for Opus
     // enableOpusRed: false
@@ -128,7 +130,7 @@ var config = {
 
     // How many participants while in the tile view mode, before the receiving video quality is reduced from HD to SD.
     // Use -1 to disable.
-    // maxFullResolutionParticipants: 2,
+    maxFullResolutionParticipants: -1,
 
     // w3c spec-compliant video constraints to use for video capture. Currently
     // used by browsers that return true from lib-jitsi-meet's
@@ -191,9 +193,9 @@ var config = {
     //     appKey: '<APP_KEY>' // Specify your app key here.
     //     // A URL to redirect the user to, after authenticating
     //     // by default uses:
-    //     // 'https://meet.jitsi/static/oauth.html'
+    //     // 'https://jitsi-meet.example.com/static/oauth.html'
     //     redirectURI:
-    //          'https://meet.jitsi/subfolder/static/oauth.html'
+    //          'https://jitsi-meet.example.com/subfolder/static/oauth.html'
     // },
     // When integrations like dropbox are enabled only that will be shown,
     // by enabling fileRecordingsServiceEnabled, we show both the integrations
@@ -273,13 +275,9 @@ var config = {
     //    // at least 360 pixels tall. If the thumbnail height reaches 720 pixels then the application will switch to
     //    // the high quality.
     //    minHeightForQualityLvl: {
-    //        360: 'standard',
+    //        360: 'standard,
     //        720: 'high'
-    //    },
-    //
-    //    // Provides a way to resize the desktop track to 720p (if it is greater than 720p) before creating a canvas
-    //    // for the presenter mode (camera picture-in-picture mode with screenshare).
-    //    resizeDesktopForPresenter: false
+    //    }
     // },
 
     // // Options for the recording limit notification.
@@ -361,11 +359,16 @@ var config = {
     // Default language for the user interface.
     // defaultLanguage: 'en',
 
-    // Disables profile and the edit of all fields from the profile settings (display name and email)
-    // disableProfile: false,
+    // If true all users without a token will be considered guests and all users
+    // with token will be considered non-guests. Only guests will be allowed to
+    // edit their profile.
+    enableUserRolesBasedOnToken: false,
 
     // Whether or not some features are checked based on token.
     // enableFeaturesBasedOnToken: false,
+
+    // Enable lock room for all moderators, even when userRolesBasedOnToken is enabled and participants are guests.
+    // lockRoomGuestEnabled: false,
 
     // When enabled the password used for locking a room is restricted to up to the number of digits specified
     // roomPasswordNumberOfDigits: 10,
@@ -438,7 +441,7 @@ var config = {
         // The STUN servers that will be used in the peer to peer connections
         stunServers: [
 
-            // { urls: 'stun:meet.jitsi:3478' },
+            // { urls: 'stun:jitsi-meet.example.com:3478' },
             { urls: 'stun:meet-jit-si-turnrelay.jitsi.net:443' }
         ]
 
@@ -482,6 +485,12 @@ var config = {
         // amplitudeAPPKey: '<APP_KEY>'
 
         // Configuration for the rtcstats server:
+        // By enabling rtcstats server every time a conference is joined the rtcstats
+        // module connects to the provided rtcstatsEndpoint and sends statistics regarding
+        // PeerConnection states along with getStats metrics polled at the specified
+        // interval.
+        // rtcstatsEnabled: true,
+
         // In order to enable rtcstats one needs to provide a endpoint url.
         // rtcstatsEndpoint: wss://rtcstats-server-pilot.jitsi.net/,
 
@@ -617,7 +626,7 @@ var config = {
     // The URL of the moderated rooms microservice, if available. If it
     // is present, a link to the service will be rendered on the welcome page,
     // otherwise the app doesn't render it.
-    // moderatedRoomServiceUrl: 'https://moderated.meet.jitsi',
+    // moderatedRoomServiceUrl: 'https://moderated.jitsi-meet.example.com',
 
     // List of undocumented settings used in jitsi-meet
     /**
@@ -643,6 +652,13 @@ var config = {
      requireDisplayName
      tokenAuthUrl
      */
+
+    /**
+     * This property can be used to alter the generated meeting invite links (in combination with a branding domain
+     * which is retrieved internally by jitsi meet) (e.g. https://meet.jit.si/someMeeting
+     * can become https://brandedDomain/roomAlias)
+     */
+    // brandingRoomAlias: null,
 
     // List of undocumented settings used in lib-jitsi-meet
     /**
@@ -676,3 +692,112 @@ var config = {
 };
 
 /* eslint-enable no-unused-vars, no-var */
+
+// Begin default config overrides.
+
+if (!config.hasOwnProperty('hosts')) config.hosts = {};
+
+config.hosts.domain = 'meet.jitsi';
+config.focusUserJid = 'focus@auth.meet.jitsi';
+
+config.hosts.muc = 'muc.meet.jitsi';
+config.bosh = '/http-bind';
+config.websocket = 'wss://movis.synology.me:5443/xmpp-websocket';
+// Video configuration.
+//
+
+if (!config.hasOwnProperty('constraints')) config.constraints = {};
+if (!config.constraints.hasOwnProperty('video')) config.constraints.video = {};
+
+config.resolution = 720;
+config.constraints.video.height = { ideal: 720, max: 720, min: 180 };
+config.constraints.video.width = { ideal: 1280, max: 1280, min: 320};
+config.disableSimulcast = false;
+config.startVideoMuted = 10;
+
+// Audio configuration.
+//
+
+config.enableNoAudioDetection = false;
+config.enableTalkWhileMuted = false;
+config.disableAP = false;
+config.stereo = false;
+config.startAudioOnly = false;
+config.startAudioMuted = 10;
+
+
+// Peer-to-Peer options.
+//
+
+if (!config.hasOwnProperty('p2p')) config.p2p = {};
+
+config.p2p.enabled = true;
+
+
+// Etherpad
+//
+
+// Recording.
+//
+
+// Analytics.
+//
+
+if (!config.hasOwnProperty('analytics')) config.analytics = {};
+
+// Enables callstatsUsername to be reported as statsId and used
+// by callstats as repoted remote id.
+config.enableStatsID = false;
+
+
+// Dial in/out services.
+//
+
+// Calendar service integration.
+//
+
+config.enableCalendarIntegration = false;
+
+// Invitation service.
+//
+
+// Miscellaneous.
+//
+
+// Prejoin page.
+config.prejoinPageEnabled = false;
+
+// Require users to always specify a display name.
+config.requireDisplayName = true;
+
+// Chrome extension banner.
+// Advanced.
+//
+
+// Lipsync hack in jicofo, may not be safe.
+config.enableLipSync = false;
+
+config.enableRemb = true;
+config.enableTcc = true;
+
+config.openBridgeChannel = 'websocket';
+
+// Enable IPv6 support.
+config.useIPv6 = true;
+
+// Transcriptions (subtitles and buttons can be configured in interface_config)
+config.transcribingEnabled = false;
+
+// Deployment information.
+//
+
+if (!config.hasOwnProperty('deploymentInfo')) config.deploymentInfo = {};
+
+// Testing
+//
+
+if (!config.hasOwnProperty('testing')) config.testing = {};
+if (!config.testing.hasOwnProperty('octo')) config.testing.octo = {};
+
+config.testing.capScreenshareBitrate = 0;
+config.testing.octo.probability = 0;
