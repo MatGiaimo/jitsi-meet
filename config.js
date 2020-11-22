@@ -275,9 +275,13 @@ var config = {
     //    // at least 360 pixels tall. If the thumbnail height reaches 720 pixels then the application will switch to
     //    // the high quality.
     //    minHeightForQualityLvl: {
-    //        360: 'standard,
+    //        360: 'standard',
     //        720: 'high'
-    //    }
+    //    },
+    //
+    //    // Provides a way to resize the desktop track to 720p (if it is greater than 720p) before creating a canvas
+    //    // for the presenter mode (camera picture-in-picture mode with screenshare).
+    //    resizeDesktopForPresenter: false
     // },
 
     // // Options for the recording limit notification.
@@ -359,16 +363,11 @@ var config = {
     // Default language for the user interface.
     // defaultLanguage: 'en',
 
-    // If true all users without a token will be considered guests and all users
-    // with token will be considered non-guests. Only guests will be allowed to
-    // edit their profile.
-    enableUserRolesBasedOnToken: false,
+    // Disables profile and the edit of all fields from the profile settings (display name and email)
+    // disableProfile: false,
 
     // Whether or not some features are checked based on token.
     // enableFeaturesBasedOnToken: false,
-
-    // Enable lock room for all moderators, even when userRolesBasedOnToken is enabled and participants are guests.
-    // lockRoomGuestEnabled: false,
 
     // When enabled the password used for locking a room is restricted to up to the number of digits specified
     // roomPasswordNumberOfDigits: 10,
@@ -694,112 +693,3 @@ var config = {
 };
 
 /* eslint-enable no-unused-vars, no-var */
-
-// Begin default config overrides.
-
-if (!config.hasOwnProperty('hosts')) config.hosts = {};
-
-config.hosts.domain = 'meet.jitsi';
-config.focusUserJid = 'focus@auth.meet.jitsi';
-
-config.hosts.muc = 'muc.meet.jitsi';
-config.bosh = '/http-bind';
-config.websocket = 'wss://movis.synology.me:5443/xmpp-websocket';
-// Video configuration.
-//
-
-if (!config.hasOwnProperty('constraints')) config.constraints = {};
-if (!config.constraints.hasOwnProperty('video')) config.constraints.video = {};
-
-config.resolution = 720;
-config.constraints.video.height = { ideal: 720, max: 720, min: 180 };
-config.constraints.video.width = { ideal: 1280, max: 1280, min: 320};
-config.disableSimulcast = false;
-config.startVideoMuted = 10;
-
-// Audio configuration.
-//
-
-config.enableNoAudioDetection = false;
-config.enableTalkWhileMuted = false;
-config.disableAP = false;
-config.stereo = false;
-config.startAudioOnly = false;
-config.startAudioMuted = 10;
-
-
-// Peer-to-Peer options.
-//
-
-if (!config.hasOwnProperty('p2p')) config.p2p = {};
-
-config.p2p.enabled = true;
-
-
-// Etherpad
-//
-
-// Recording.
-//
-
-// Analytics.
-//
-
-if (!config.hasOwnProperty('analytics')) config.analytics = {};
-
-// Enables callstatsUsername to be reported as statsId and used
-// by callstats as repoted remote id.
-config.enableStatsID = false;
-
-
-// Dial in/out services.
-//
-
-// Calendar service integration.
-//
-
-config.enableCalendarIntegration = false;
-
-// Invitation service.
-//
-
-// Miscellaneous.
-//
-
-// Prejoin page.
-config.prejoinPageEnabled = false;
-
-// Require users to always specify a display name.
-config.requireDisplayName = true;
-
-// Chrome extension banner.
-// Advanced.
-//
-
-// Lipsync hack in jicofo, may not be safe.
-config.enableLipSync = false;
-
-config.enableRemb = true;
-config.enableTcc = true;
-
-config.openBridgeChannel = 'websocket';
-
-// Enable IPv6 support.
-config.useIPv6 = true;
-
-// Transcriptions (subtitles and buttons can be configured in interface_config)
-config.transcribingEnabled = false;
-
-// Deployment information.
-//
-
-if (!config.hasOwnProperty('deploymentInfo')) config.deploymentInfo = {};
-
-// Testing
-//
-
-if (!config.hasOwnProperty('testing')) config.testing = {};
-if (!config.testing.hasOwnProperty('octo')) config.testing.octo = {};
-
-config.testing.capScreenshareBitrate = 0;
-config.testing.octo.probability = 0;
