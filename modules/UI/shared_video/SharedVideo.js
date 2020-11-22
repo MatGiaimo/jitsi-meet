@@ -263,7 +263,7 @@ export default class SharedVideoManager {
         player.playVideo();
         // For the browsers - start muted then unmute after play
         player.unMute();
-        player.setVolume(.5);
+        player.setVolume(.25);
 
         var url = self.url;
 
@@ -455,8 +455,6 @@ export default class SharedVideoManager {
           player.playVideo();
 
           player.unMute();
-
-          player.setVolume(50);
 
           const iframe = player.getIframe();
 
