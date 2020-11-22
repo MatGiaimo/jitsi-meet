@@ -24,3 +24,30 @@ export function createDeferred() {
 export function createTaskQueue() {
     return new TaskQueue();
 }
+
+/**
+ * Appends a js file to the page using the script tag
+ *
+ * @returns void
+ */
+export const appendScript = (scriptToAppend) => {
+    const script = document.createElement("script");
+    script.src = scriptToAppend;
+    script.async = true;
+    document.body.appendChild(script);
+}
+
+/**
+ * Removes a js file from script tag
+ *
+ * @returns void
+ */
+export const removeScript = (scriptToremove) => {
+    let allsuspects=document.getElementsByTagName("script");
+    for (let i=allsuspects.length; i>=0; i--) {
+      if (allsuspects[i] && allsuspects[i].getAttribute("src") !== null
+          && allsuspects[i].getAttribute("src").indexOf(`${scriptToremove}`) !== -1 ) {
+           allsuspects[i].parentNode.removeChild(allsuspects[i])
+        }
+    }
+}

@@ -114,7 +114,7 @@ const Filmstrip = {
      * @returns {void}
      */
     resizeThumbnailsForVerticalView() {
-        const thumbs = this._getThumbs(true);
+        const thumbs = this._getThumbs(false);
 
         if (thumbs.localThumb) {
             const heightToWidthPercent = 100 / interfaceConfig.LOCAL_THUMBNAIL_RATIO;
