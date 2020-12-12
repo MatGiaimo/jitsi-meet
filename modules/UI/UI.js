@@ -319,6 +319,7 @@ UI.showLoginPopup = function(callback) {
     const message
         = `<input name="username" type="text"
                 placeholder="user@domain.net"
+                data-i18n="[placeholder]dialog.user"
                 class="input-control" autofocus>
          <input name="password" type="password"
                 data-i18n="[placeholder]dialog.userPassword"
@@ -596,16 +597,6 @@ UI.onUserFeaturesChanged = user => VideoLayout.onUserFeaturesChanged(user);
  * @returns {number} The number of remote videos.
  */
 UI.getRemoteVideosCount = () => VideoLayout.getRemoteVideosCount();
-
-/**
- * Returns the video type of the remote participant's video.
- * This is needed for the torture clients to determine the video type of the
- * remote participants.
- *
- * @param {string} participantID - The id of the remote participant.
- * @returns {string} The video type "camera" or "desktop".
- */
-UI.getRemoteVideoType = participantID => VideoLayout.getRemoteVideoType(participantID);
 
 /**
  * Sets the remote control active status for a remote participant.
