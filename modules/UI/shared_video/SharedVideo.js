@@ -535,15 +535,15 @@ export default class SharedVideoManager {
 
         if (!this.yVideoId)
         {
-          // check for title
+          // check for title https://content~sub~https://subs~title~title
           var title = url.split('~title~');
-          title = unescape(title[1]);
+          var parsedTitle = unescape(title[1]);
           // check for combined subtitle file url and send as subtitle track
-          var urls = url.split('~sub~');
+          var urls = title[0].split('~sub~');
           url = urls[0];
           this.subTrackUrl = urls[1];
           this.initVideoAPI(attributes, url, this.subTrackUrl);
-          this.initVideoEvents(title);
+          this.initVideoEvents(parsedTitle);
         }
         else {
           //this.url = yVideoId;
