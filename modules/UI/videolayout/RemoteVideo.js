@@ -169,7 +169,7 @@ export default class RemoteVideo extends SmallVideo {
             }
         }
 
-        let initialVolumeValue = this._audioStreamElement && this._audioStreamElement.volume ? .5 : 0;
+        let initialVolumeValue = this._audioStreamElement && this._audioStreamElement.volume;
 
         if (this._audioStreamElement && this._audioStreamElement.hasVolumeChanged) {
           initialVolumeValue = this._audioStreamElement.volume;
