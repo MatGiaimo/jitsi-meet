@@ -169,11 +169,7 @@ export default class RemoteVideo extends SmallVideo {
             }
         }
 
-        let initialVolumeValue = this._audioStreamElement && this._audioStreamElement.volume;
-
-        if (this._audioStreamElement && this._audioStreamElement.hasVolumeChanged) {
-          initialVolumeValue = this._audioStreamElement.volume;
-        }
+        let initialVolumeValue = this._audioStreamElement && this._audioStreamElement.volume ? this._audioStreamElement.volume : 0;
 
         // hide volume when in silent mode
         const onVolumeChange
@@ -294,7 +290,6 @@ export default class RemoteVideo extends SmallVideo {
     _setAudioVolume(newVal) {
         if (this._audioStreamElement) {
             this._audioStreamElement.volume = newVal;
-            this._audioStreamElement.hasVolumeChanged = true;
         }
     }
 
