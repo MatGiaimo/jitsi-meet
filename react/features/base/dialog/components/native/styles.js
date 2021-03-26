@@ -43,7 +43,11 @@ export const bottomSheetStyles = {
         alignItems: 'stretch',
         flex: 1,
         flexDirection: 'column',
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
+        maxWidth: 500,
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        width: '100%'
     },
 
     sheetItemContainer: {
@@ -169,10 +173,6 @@ ColorSchemeRegistry.register('BottomSheet', {
          * Additional style that is not directly used as a style object.
          */
         underlayColor: ColorPalette.overflowMenuItemUnderlay
-    },
-
-    expandIcon: {
-        color: schemeColor('icon')
     },
 
     /**
