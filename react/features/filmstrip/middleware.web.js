@@ -1,16 +1,14 @@
 // @flow
 
-import Filmstrip from '../../../modules/UI/videolayout/Filmstrip';
+import VideoLayout from '../../../modules/UI/videolayout/VideoLayout';
 import { MiddlewareRegistry } from '../base/redux';
 import { CLIENT_RESIZED } from '../base/responsive-ui';
+import { SETTINGS_UPDATED } from '../base/settings';
 import {
     getCurrentLayout,
-    LAYOUTS,
-    shouldDisplayTileView,
-    getTileViewGridDimensions
+    LAYOUTS
 } from '../video-layout';
 
-import { SET_HORIZONTAL_VIEW_DIMENSIONS, SET_TILE_VIEW_DIMENSIONS } from './actionTypes';
 import { setHorizontalViewDimensions, setTileViewDimensions } from './actions.web';
 
 import './subscriber.web';
@@ -30,8 +28,6 @@ MiddlewareRegistry.register(store => next => action => {
         case LAYOUTS.TILE_VIEW: {
             const gridDimensions = getTileViewGridDimensions(state);
             const { clientHeight, clientWidth } = state['features/base/responsive-ui'];
-            const { isOpen } = state['features/chat'];
-            const { visible } = state['features/toolbox'];
 
             store.dispatch(
                 setTileViewDimensions(
@@ -40,8 +36,7 @@ MiddlewareRegistry.register(store => next => action => {
                         clientHeight,
                         clientWidth
                     },
-                    isOpen,
-                    visible
+                    store
                 )
             );
             break;
@@ -52,31 +47,14 @@ MiddlewareRegistry.register(store => next => action => {
         }
         break;
     }
-    case SET_TILE_VIEW_DIMENSIONS: {
-        const state = store.getState();
-
-        if (shouldDisplayTileView(state)) {
-            const { width, height } = state['features/filmstrip'].tileViewDimensions.thumbnailSize;
-
-            // Once the thumbnails are reactified this should be moved there too.
-            Filmstrip.resizeThumbnailsForTileView(width, height, true);
+    case SETTINGS_UPDATED: {
+        if (typeof action.settings?.localFlipX === 'boolean') {
+            // TODO: This needs to be removed once the large video is Reactified.
+            VideoLayout.onLocalFlipXChanged();
         }
-        break;
-    }
-    case SET_HORIZONTAL_VIEW_DIMENSIONS: {
-        const state = store.getState();
-
-        if (getCurrentLayout(state) === LAYOUTS.HORIZONTAL_FILMSTRIP_VIEW) {
-            const { horizontalViewDimensions = {} } = state['features/filmstrip'];
-
-            // Once the thumbnails are reactified this should be moved there too.
-            Filmstrip.resizeThumbnailsForHorizontalView(horizontalViewDimensions, true);
-        }
-
         break;
     }
     }
 
     return result;
 });
-
